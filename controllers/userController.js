@@ -52,7 +52,7 @@ const registerUser = asyncHandler(async (req, res) => {
             cartList,
             orderList,
             isAdmin,
-            token // Always include token
+            
         });
     } else {
         res.status(400);
@@ -109,7 +109,6 @@ const registerAdmin = asyncHandler(async (req, res) => {
             cartList,
             orderList,
             isAdmin,
-            // token // Always include token
         });
     } else {
         res.status(400);
@@ -156,7 +155,7 @@ const loginUser = asyncHandler(async (req, res) => {
         cartList,
         orderList,
         isAdmin,
-        token // Always include token
+        
     });
 });
 
