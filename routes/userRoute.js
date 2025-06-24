@@ -8,7 +8,8 @@ const {
   registerAdmin,
   loginUser,
   logoutUser,
-  getUserProfile
+  getUserProfile,
+  loginStatus
 } = require("../controllers/userController");
 
 
@@ -18,6 +19,7 @@ router.post("/register-admin", registerAdmin);
 router.post("/login", loginUser);
 router.get('/logout', logoutUser);
 router.get("/profile", protect, getUserProfile);
+router.get("/loginStatus", loginStatus)
 
 
 

@@ -6,6 +6,11 @@ const User = require("../models/usermodel");
 
 // Register User
 const registerUser = asyncHandler(async (req, res) => {
+   console.log("DEBUG: req.body = ", req.body);
+
+    if (!req.body) {
+        return res.status(400).json({ message: "Request body is missing!" });
+    }
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
@@ -14,7 +19,6 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     if (password.length < 6) {
-        res.status(400);
         throw new Error("Password must be at least 6 characters");
     }
 
@@ -40,7 +44,7 @@ const registerUser = asyncHandler(async (req, res) => {
         httpOnly: true,
         expires: new Date(Date.now() + 1000 * 86400), // 24 hours
         sameSite: "none",
-        secure: false, // For local development
+        secure: true,
     });
 
     if (user) {
@@ -97,7 +101,7 @@ const registerAdmin = asyncHandler(async (req, res) => {
         httpOnly: true,
         expires: new Date(Date.now() + 1000 * 86400), // 24 hours
         sameSite: "none",
-        secure: false, // For local development
+        secure: true,
     });
 
     if (user) {
@@ -109,6 +113,7 @@ const registerAdmin = asyncHandler(async (req, res) => {
             cartList,
             orderList,
             isAdmin,
+           
         });
     } else {
         res.status(400);
@@ -144,7 +149,7 @@ const loginUser = asyncHandler(async (req, res) => {
         httpOnly: true,
         expires: new Date(Date.now() + 1000 * 86400), // 24 hours
         sameSite: "none",
-        secure: false, // For local development
+        secure: true,
     });
 
     const { _id, name, isAdmin, cartList, orderList } = user;
@@ -155,8 +160,28 @@ const loginUser = asyncHandler(async (req, res) => {
         cartList,
         orderList,
         isAdmin,
-        
+       
     });
+});
+
+const loginStatus = asyncHandler(async (req, res) => {
+    const token = req.cookies.token;
+
+    if (!token) {
+        return res.json(false);
+    }
+
+    // verify the token
+
+    const verified = jwt.verify(token, process.env.JWT_SECRET);
+
+    if(verified){
+        return res.json(true);
+    }
+
+    return res.json(false);
+
+    
 });
 
 // Logout User
@@ -167,7 +192,7 @@ const logoutUser = asyncHandler(async (req, res) => {
         httpOnly: true,
         expires: new Date(0), 
         sameSite: "none",
-        secure: false,
+        secure: true,
     });
 
     res.status(200).json({ message: "Logged out successfully" });
@@ -175,30 +200,28 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 const getUserProfile = asyncHandler(async (req, res) => {
     const user = req.user;
+
     if (user) {
-        const { _id, name, email, isAdmin, orderList, cartList } = user;
+        const { _id, name, email, isAdmin, cartList, orderList } = user;
         res.status(200).json({
             _id,
             name,
             email,
             cartList,
             orderList,
-            isAdmin,
-            
+            isAdmin
         });
     } else {
         res.status(404);
         throw new Error("User not found");
     }
-}
-);
-
-
+})
 
 module.exports = {
     registerUser,
     registerAdmin,
     loginUser,
     logoutUser,
-    getUserProfile
+    getUserProfile,
+    loginStatus
 };
