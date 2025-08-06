@@ -112,5 +112,17 @@ const getAnEbook = asyncHandler(async (req, res) => {
 }
 );
 
+const getBestSellers = asyncHandler(async (req, res) => {
+  const bestSellers = await Ebook.find({ best_seller: true });
 
-module.exports = { createEbook, updateEbook, getAllEbooks, getAnEbook };
+  if (!bestSellers || bestSellers.length === 0) {
+    res.status(404);
+    throw new Error('No best seller ebooks found');
+  }
+
+  res.status(200).json(bestSellers);
+});
+
+
+
+module.exports = { createEbook, updateEbook, getAllEbooks, getAnEbook, getBestSellers  };
